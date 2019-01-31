@@ -69,7 +69,7 @@ module ALDiGraph
     end
 end
 
-class MinHeap
+class VertexMinHeap
     attr_accessor :heap
 
     def initialize(nums = [])
@@ -98,31 +98,31 @@ class MinHeap
     end
 
     def heapify
-        i = 0
-        while i < @heap.length
-            j = i
-            while j > 0
-                parent_i = (j - 1) / 2
-                if @heap[j].dist < @heap[parent_i].dist
-                    @heap[j], @heap[parent_i] = @heap[parent_i], @heap[j]
-                    j = parent_i
+        bound_idx = 0
+        while bound_idx < @heap.length
+            child_idx = bound_idx
+            while child_idx > 0
+                parent_idx = (child_idx - 1) / 2
+                if @heap[child_idx].dist < @heap[parent_idx].dist
+                    @heap[child_idx], @heap[parent_idx] = @heap[parent_idx], @heap[child_idx]
+                    child_idx = parent_idx
                 else
                     break
                 end
             end
-            i += 1
+            bound_idx += 1
         end
     end
 
     private
 
     def sift_up
-        i = @heap.length - 1
-        while i > 0
-            parent_i = (i - 1) / 2
-            if @heap[i].dist < @heap[parent_i].dist
-                @heap[i], @heap[parent_i] = @heap[parent_i], @heap[i]
-                i = parent_i
+        child_idx = @heap.length - 1
+        while child_idx > 0
+            parent_idx = (child_idx - 1) / 2
+            if @heap[child_idx].dist < @heap[parent_idx].dist
+                @heap[child_idx], @heap[parent_idx] = @heap[parent_idx], @heap[child_idx]
+                child_idx = parent_idx
             else
                 break
             end
@@ -131,14 +131,14 @@ class MinHeap
 
     def sift_down
         return if @heap.length < 2
-        i = 0
-        while i <= (@heap.length - 2) / 2
-            left_i = i * 2 + 1
-            right_i = i * 2 + 2
-            smaller_i = @heap[right_i].nil? || (@heap[left_i].dist < @heap[right_i].dist) ? left_i : right_i
-            if @heap[smaller_i].dist < @heap[i].dist
-                @heap[smaller_i], @heap[i] = @heap[i], @heap[smaller_i]
-                i = smaller_i
+        idx = 0
+        while idx <= (@heap.length - 2) / 2
+            left_idx = idx * 2 + 1
+            right_idx = idx * 2 + 2
+            smaller_idx = @heap[right_idx].nil? || (@heap[left_idx].dist < @heap[right_idx].dist) ? left_idx : right_idx
+            if @heap[smaller_idx].dist < @heap[idx].dist
+                @heap[smaller_idx], @heap[idx] = @heap[idx], @heap[smaller_idx]
+                idx = smaller_idx
             else
                 break
             end
@@ -166,7 +166,7 @@ def network_delay_time(times, n, k)
         graph.add_edge(t[0], t[1], t[2])
     end
     return -1 if graph.num_vertices != n
-    unvisited = MinHeap.new
+    unvisited = VertexMinHeap.new
     graph.graph.each_key do |key|
         graph.graph[key][:vertex].dist = 0 if key == k
         unvisited.insert(graph.graph[key][:vertex])
@@ -187,19 +187,17 @@ def network_delay_time(times, n, k)
     max == Float::INFINITY ? -1 : max
 end
 
-# graph = ALDiGraph::Graph.new
-# graph.add_vertex(1)
-# graph.add_vertex(2)
-# graph.add_vertex(3)
-# graph.add_vertex(4)
-# graph.add_edge(2, 1, 1)
-# graph.add_edge(2, 3, 1)
-# graph.add_edge(3, 4, 1)
-# graph.print
+graph = ALDiGraph::Graph.new
+graph.add_vertex(1)
+graph.add_vertex(2)
+graph.add_vertex(3)
+graph.add_vertex(4)
+graph.add_edge(2, 1, 1)
+graph.add_edge(2, 3, 1)
+graph.add_edge(3, 4, 1)
+graph.print
 
-# heap = MinHeap.new([4, 6, 2, 8, 1, 3])
-# p heap.heap
-# heap.insert(5)
-# p heap.heap
-# heap.pop
-# p heap.heap
+times = [[2, 1, 1], [2, 3, 1], [3, 4, 1]]
+n = 4
+k = 2
+puts "network delay time: #{network_delay_time(times, n, k)}"
